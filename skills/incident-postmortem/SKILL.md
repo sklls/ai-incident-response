@@ -4,7 +4,7 @@ description: Run a blameless retrospective and record preventive controls, then 
 ---
 
 ## Framework enforced
-The agentic **10-question launch checklist** (S4) and the manager's **10 governance questions** (S2) as the preventive-control source; KPMG governance steps; "named owner, drift alert, shutdown trigger".
+The agentic **10-question launch checklist** (S4) and the manager's **10 governance questions** (S2) as the preventive-control source; **ISO/IEC 42001 A.10** (corrective + preventive actions, records, and learning to closure); KPMG governance steps; "named owner, drift alert, shutdown trigger".
 
 ## When to use
 After service is restored and communications are handled — the final phase.

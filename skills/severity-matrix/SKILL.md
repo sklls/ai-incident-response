@@ -4,7 +4,7 @@ description: Score incident severity S1–S4 from blast radius, data sensitivity
 ---
 
 ## Framework enforced
-"**Blast radius**" (Session 4 agentic terminology); NIST AI 600-1 risk tagging; enterprise program-question "**tiers**"; manager's governance Q1 ("what happens when it fails?").
+"**Blast radius**" (Session 4 agentic terminology); NIST AI 600-1 risk tagging; enterprise program-question "**tiers**"; manager's governance Q1 ("what happens when it fails?"). S1 aligns with **EU AI Act Art. 73** serious-incident severity (death / critical-infrastructure / widespread harm → tightest reporting band).
 
 ## When to use
 During triage, and any time new information changes an incident's scope (e.g. a privacy breach's "1 vs many" resolves).

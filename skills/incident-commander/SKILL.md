@@ -4,7 +4,7 @@ description: Orchestrate an AI incident end-to-end — contain, investigate, rem
 ---
 
 ## Framework enforced
-NIST AI RMF **GOVERN** function; KPMG India 10 trust pillars; Microsoft governance maturity model; the enterprise "10 program questions" (this skill operationalizes *incidents* + *evidence*).
+NIST AI RMF **GOVERN** + **MANAGE** (incident response) functions; **NIST SP 800-61r3 / CSF 2.0** (Identify·Protect·Detect·Respond·Recover); **ISO/IEC 42001 Annex A.10** (AI incident management — this lifecycle is its operational clause) and **ISO/IEC 23894** (AI risk); KPMG India 10 trust pillars; Microsoft governance maturity model; the enterprise "10 program questions" (operationalizes *incidents* + *evidence*).
 
 ## When to use
 An AI system has misbehaved in production and must be contained, investigated, and remedied — e.g. a chatbot leaking data, a hiring model with disparate impact, or a finance agent acting beyond its authority.
@@ -27,3 +27,5 @@ The agent may **investigate, analyze, score, draft, and log** autonomously, but 
 6. **Postmortem** — invoke `incident-postmortem`; record preventive controls; set phase to `closed`; log.
 
 At each phase, append a `ledger` entry naming the actor (`agent:Commander`) and rationale, so the record reconstructs the whole incident.
+
+**Lifecycle ↔ CSF 2.0 mapping (NIST SP 800-61r3):** triage = *Identify/Detect* · contain = *Respond (mitigate)* · investigate = *Respond (analyze)* · remediate = *Recover* · communicate = *Respond (report)* · postmortem = *Identify/Govern (improve)*. ISO/IEC 42001 A.10 requires exactly this: defined incident types, detection, root cause, corrective + preventive actions, and records to closure.

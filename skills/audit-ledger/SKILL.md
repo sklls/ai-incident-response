@@ -4,7 +4,7 @@ description: Append every agent and human action to a tamper-evident, append-onl
 ---
 
 ## Framework enforced
-EY "**traceability**" quality attribute; agentic launch-checklist #8 (**audit-trail reconstruction possible**); enterprise program-question "**evidence**".
+EY "**traceability**" quality attribute; agentic launch-checklist #8 (**audit-trail reconstruction possible**); **ISO/IEC 42001 A.10** (records maintained per incident, detection→closure); **CERT-In 2022** log-retention duty (**180 days**); enterprise program-question "**evidence**".
 
 ## When to use
 On every action by anyone, at every phase — intake, scoring, approval request, human decision, containment, remediation, communication, closure.

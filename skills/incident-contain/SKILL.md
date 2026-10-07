@@ -4,7 +4,7 @@ description: Stop the harm from spreading, under a human-approved gate, before i
 ---
 
 ## Framework enforced
-EY guardrail 6 (kill-switch, approval thresholds); OpenAI confirmation flows; agentic launch-checklist #9 (kill-switch, rollback, incident playbook tested).
+EY guardrail 6 (kill-switch, approval thresholds); OpenAI confirmation flows; **Google SAIF** (extend detection & response to AI; isolate rogue agent actions); agentic launch-checklist #9 (kill-switch, rollback, incident playbook tested).
 
 ## When to use
 Immediately after triage, before root-cause analysis — containment does not wait for the cause.
