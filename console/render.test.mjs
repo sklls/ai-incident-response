@@ -33,3 +33,16 @@ test('incident detail shows the phase stepper with the active phase', () => {
   assert.match(html, /INC-025/);
   assert.match(html, /contain/);
 });
+
+test('an obligation with a deadline emits a .countdown element for the live timer', () => {
+  const html = renderIncidentDetail(
+    { id:'INC-023', title:'x', phase:'communicate', severity:'S1', scope:'x', root_cause:null,
+      obligations:[{ regulation:'DPDP Act 2023', requirement:'breach notice', deadline:'2026-10-10T14:00:00Z' }] }, []);
+  assert.match(html, /class="countdown"/);
+});
+
+test('no deadline means no countdown element', () => {
+  const html = renderIncidentDetail(
+    { id:'INC-025', title:'x', phase:'triage', severity:'S1', scope:'x', root_cause:null, obligations:[] }, []);
+  assert.doesNotMatch(html, /class="countdown"/);
+});

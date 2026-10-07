@@ -48,11 +48,15 @@ export function renderIncidentDetail(incident, ledger) {
   if (!incident) return `<p class="empty">Select an incident</p>`;
   const stepper = PHASES.map(p =>
     `<span class="step ${p === incident.phase ? 'active' : ''}">${p}</span>`).join('<i>›</i>');
-  const obligations = (incident.obligations || []).map(o =>
+  const obList = incident.obligations || [];
+  const obligations = obList.map(o =>
     `<li>${esc(o.regulation)}: ${esc(o.requirement)}${o.deadline ? ` · ⏱ ${esc(o.deadline)}` : ''}</li>`).join('');
+  const withDeadline = obList.find(o => o.deadline);
+  const countdown = withDeadline
+    ? `<div class="countdown" data-deadline="${esc(withDeadline.deadline)}">⏱ calculating…</div>` : '';
   return `<h2>${esc(incident.id)} · ${esc(incident.title)}</h2>
     <div class="stepper">${stepper}</div>
     <div class="meta">Severity <b class="sev-${esc(incident.severity)}">${esc(incident.severity)}</b> · Scope ${esc(incident.scope)}</div>
     <div class="rootcause"><b>Root cause:</b> ${incident.root_cause ? esc(incident.root_cause) : 'pending investigation…'}</div>
-    ${obligations ? `<div class="obl"><b>⚖ Obligations</b><ul>${obligations}</ul></div>` : ''}`;
+    ${obligations ? `<div class="obl"><b>⚖ Obligations</b><ul>${obligations}</ul>${countdown}</div>` : ''}`;
 }
