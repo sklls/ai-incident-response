@@ -1,0 +1,11 @@
+{
+  "name": "ai-incident-response",
+  "owner": { "name": "Yash Kolhe" },
+  "plugins": [
+    {
+      "name": "ai-incident-response",
+      "source": "./",
+      "description": "AI incident-response agent with 14 governance skills, human-approval gates and a tamper-evident audit ledger."
+    }
+  ]
+}

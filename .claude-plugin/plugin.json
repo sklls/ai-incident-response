@@ -1,0 +1,8 @@
+{
+  "name": "ai-incident-response",
+  "version": "1.0.0",
+  "description": "Incident-response agent for AI systems: 14 governance skills (triage, contain, investigate, remediate, communicate, post-mortem) behind a human-approval gate and a tamper-evident audit ledger. India-first regulatory mapping.",
+  "author": { "name": "Yash Kolhe" },
+  "keywords": ["incident-response", "ai-governance", "responsible-ai", "audit", "dpdp", "nist-ai-rmf", "iso-42001"],
+  "license": "MIT"
+}
