@@ -22,6 +22,15 @@ The job is to map an incident to its concrete duties and deadlines, and the disc
 
 **DPDP breach report — required contents:** nature of the breach · data categories affected · approximate number of Data Principals · likely consequences · measures taken/proposed.
 
+### India — sectoral regulators (run *alongside* the clocks above; some are tighter)
+| Sector | Regulator | Deadline |
+|---|---|---|
+| Banking / payments | RBI | cyber incident within **2–6 hours** |
+| Market intermediary | SEBI | **6 hours**, plus a root-cause analysis within **21 days** |
+| Insurance | IRDAI | **6 hours** |
+| Listed company (material event) | SEBI LODR Reg. 30 | **24 hours** |
+For a regulated entity, check these first — the sectoral clock is often the real binding deadline.
+
 ### By scenario
 - **Privacy** → CERT-In **6h**; DPDP initial + **72h** to the Board; notify Data Principals; IT Act §43A/SPDI reasonable-security liability; NITI purpose-limitation; Puttaswamy (privacy is a fundamental right).
 - **Fairness** → rights-based: Constitution **Art. 14/15** (equality; no discrimination on religion, race, caste, sex, place of birth), NITI fairness-by-group + right to appeal. Comparison: EU AI Act Annex III (hiring = high-risk), EEOC/Title VII (four-fifths + significance).
