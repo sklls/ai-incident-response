@@ -1,10 +1,10 @@
 # Skill Evaluation Report — AI Incident Response Library
 
 **Date:** 2026-10-07
-**What was tested:** all 14 governance skills, each on a realistic incident-manager prompt.
-**Method:** for every skill, a fresh subagent answered the prompt **with the skill** vs a **baseline** subagent that answered the same prompt cold (no skill, forbidden from reading `skills/`). Model: Claude Sonnet for all 28 runs. Each answer was graded against 3–4 objective assertions. Plus the **48 unit tests** that verify the computable skills' decision rules.
+**What was tested:** all 14 governance skills, each on a realistic incident-manager prompt, **across three models (Opus, Sonnet, Haiku)**.
+**Method:** for every skill × model, a fresh subagent answered the prompt **with the skill** vs a **baseline** subagent that answered the same prompt cold (no skill, forbidden from reading `skills/`). 14 skills × 3 models × {with, baseline} = **84 runs.** With-skill and baseline share the model, so each pair isolates the *skill's* contribution, not the model's. Each answer was graded against 3–4 objective assertions (55 total). Plus the **48 unit tests** that verify the computable skills' decision rules.
 
-> **Headline:** with-skill **55/55 assertions (100%)**; baseline **≈46/55 (84%)**. Both are strong — the baseline (Sonnet) is a capable generalist — so the skills' measurable value is **governance discipline and consistency**, not secret knowledge. The clearest, most important gains are the **human-approval gate** ("no record, no action"), **India-first legal precision** (esp. IT Act §11 attribution), and **named owners + reconstruct-from-ledger**. A weaker model would show a larger gap.
+> **Headline:** with-skill is **55/55 assertions (100%) on every model** — Opus, Sonnet, and Haiku. The baseline falls with model price: **Opus 48/55 (87%) · Sonnet 46/55 (84%) · Haiku 39.5/55 (72%)**. The skills' measurable value is **governance discipline and consistency**, and it is **largest on the cheapest model**. The clearest, most important gains are the **human-approval gate** ("no record, no action"), **India-first legal precision** (esp. IT Act §11 attribution and the CERT-In 6h clock — which the Haiku baseline dropped entirely), and **named owners + reconstruct-from-ledger** (the Haiku baseline *hallucinated a different incident* in its post-mortem; the ledger-reconstruction skill prevents that).
 
 ---
 
@@ -19,29 +19,29 @@ Covered: `severity-matrix` (scoring + fail-safe unknown→worst-case), `fairness
 
 ---
 
-## Part 2 — Behavioral scorecard (with-skill vs no-skill baseline)
+## Part 2 — Behavioral scorecard (with-skill vs no-skill baseline, per skill × model)
 
-Score = assertions met (partial = 0.5). "Δ" = with-skill minus baseline.
+Score = assertions met (partial = 0.5). **With-skill is a perfect score on every skill for every model**, so the table shows the **baseline** score per model and what the skill adds. Lower baseline = bigger skill win. (Every with-skill cell is 4/4, or 3/3 for `incident-investigate`.)
 
-| # | Skill | With-skill | Baseline | Δ | What the skill added that the baseline missed |
-|---|-------|:---------:|:--------:|:--:|---|
-| 1 | incident-commander | 4/4 | 2.5/4 | **+1.5** | approval **gate as a blocking precondition** (baseline contained immediately); immutable per-action ledger |
-| 2 | incident-triage | 4/4 | 4/4 | 0 | (tie) skill adds India framing + OECD/NIST tags |
-| 3 | incident-contain | 4/4 | 3/4 | **+1.0** | **approval before acting** (baseline said "act first, ratify after") |
-| 4 | incident-investigate | 3/3 | 3/3 | 0 | (tie) baseline nailed trigger-vs-cause; skill adds ATLAS/OWASP labels |
-| 5 | incident-remediate | 4/4 | 3.5/4 | +0.5 | gated the fix deploy; exact validation replay of the injected invoice |
-| 6 | incident-communicate | 4/4 | 2.5/4 | **+1.5** | **approval gate on every send**; India-first (baseline sprawled to GDPR/sectoral) |
-| 7 | incident-postmortem | 4/4 | 3/4 | +1.0 | **named owners** (baseline left [TBD]); reconstruct from the immutable ledger |
-| 8 | privacy-breach | 4/4 | 4/4 | 0 | (tie) skill tighter; adds the "count = compliance step" point + leak canary |
-| 9 | fairness-bias | 4/4 | 3.5/4 | +0.5 | more decisive "route to human, don't shut off" + the `clear:true` re-validation loop |
-| 10 | agent-autonomy | 4/4 | 2.5/4* | **+1.5** | **IT Act §11 / RBI liability anchor**; explicit injection classification |
-| 11 | severity-matrix | 4/4 | 3.5/4 | +0.5 | the exact numeric score + S1/S2 auto-escalate + re-score discipline |
-| 12 | approval-gate | 4/4 | 4/4 | 0 | (tie) baseline excellent (even warned against record-editing); skill adds `decideGate` mechanics |
-| 13 | audit-ledger | 4/4 | 4/4 | 0 | (tie) baseline excellent (even external anchoring); skill adds "never repair a break" + `verifyChain` |
-| 14 | regulatory-map | 4/4 | 3/4 | +1.0 | **IT Act §11 attribution** (baseline missed it) + clean tightest-clock-first ordering |
-| | **Total** | **55/55 (100%)** | **≈46/55 (84%)** | **+16 pts** | |
+| # | Skill | Opus base | Sonnet base | Haiku base | What the skill adds that baselines miss |
+|---|-------|:---------:|:-----------:|:----------:|---|
+| 1 | incident-commander | 2.5/4 | 2.5/4 | 2.5/4 | approval **gate as a blocking precondition** (all baselines contain immediately); immutable per-action ledger |
+| 2 | incident-triage | 4/4 | 4/4 | 2.5/4 | India framing + OECD/NIST tags; **Haiku baseline named no owner** and used GDPR |
+| 3 | incident-contain | 3.5/4 | 3/4 | 3/4 | **approval before acting** (Sonnet/Haiku said "act first"; Opus allowed break-glass bypass) |
+| 4 | incident-investigate | 3/3 | 3/3 | 2.5/3 | ATLAS/OWASP labels + clean look-alike rule-out (Haiku mislabeled it "misalignment") |
+| 5 | incident-remediate | 3/4 | 3.5/4 | 2.5/4 | **gated deploy** + exact replay of the injected invoice (no baseline gated the deploy) |
+| 6 | incident-communicate | 2.5/4 | 2.5/4 | 1/4 | **approval gate on sends** + tightest-clock order; **Haiku baseline dropped CERT-In 6h entirely** |
+| 7 | incident-postmortem | 3/4 | 3/4 | 2/4 | **named owners** + ledger reconstruction; **Haiku baseline hallucinated a different incident** |
+| 8 | privacy-breach | 4/4 | 4/4 | 3/4 | cache/tenant-bleed hypothesis + leak canary; Haiku baseline missed CERT-In 6h |
+| 9 | fairness-bias | 4/4 | 3.5/4 | 4/4 | decisive route-to-human + `clear:true` loop (all baselines caught the four-fifths nuance here†) |
+| 10 | agent-autonomy | 3/4 | 2.5/4 | 3/4 | **IT Act §11 / RBI liability anchor** — *no* baseline on *any* model cited it |
+| 11 | severity-matrix | 4/4 | 3.5/4 | 4/4 | the exact numeric score (10) + S1≥8 auto-escalate + re-score discipline |
+| 12 | approval-gate | 4/4 | 4/4 | 4/4 | `decideGate` mechanics (baselines all correctly held on "pending") |
+| 13 | audit-ledger | 4/4 | 4/4 | 4/4 | `verifyChain` + "never repair a break" (baselines all described hash-chaining) |
+| 14 | regulatory-map | 3.5/4 | 3/4 | 1.5/4 | **§11 attribution** + tightest-clock order; **Haiku baseline invented wrong deadlines + wrong statute name** |
+| | **Total baseline** | **48/55 (87%)** | **46/55 (84%)** | **39.5/55 (72%)** | with-skill = **55/55 (100%)** on all three |
 
-*`agent-autonomy` baseline file came back empty (a capture glitch); graded from the run's own summary.
+†The per-skill fairness prompt did not ask "should we switch the model off?", so no baseline volunteered that error here. The **whole-agent** audit (`AUDIT-REPORT.md`) *did* ask it point-blank — and the Haiku baseline wrongly answered "switch it off immediately." Same model, opposite outcome, depending only on whether the discipline was present.
 
 ---
 
@@ -80,9 +80,9 @@ Score = assertions met (partial = 0.5). "Δ" = with-skill minus baseline.
 3. **Capture robustness:** the `agent-autonomy` baseline wrote an empty file; for a formal re-run, have each run verify its output file is non-empty before handing back.
 
 ## Part 6 — Limitations
-- One model (Sonnet), one prompt per skill, one run each — enough to show direction, not a large-N statistic. The repeatable, high-N part of the eval is the 48 logic tests.
-- Grading used objective assertions scored inline; raw outputs are in `skills-eval-workspace/iteration-1/<skill>/{with_skill,baseline}.md` (git-ignored) for inspection.
-- With-skill and baseline ran on the same model, so this isolates the *skill's* contribution, not the model's.
+- Three models (Opus, Sonnet, Haiku), one prompt per skill, one run each per cell — enough to show a clear, monotonic direction (baseline quality falls with model price; with-skill holds at 100%), not a large-N statistic. The repeatable, high-N part of the eval is the 48 logic tests.
+- Grading used objective assertions scored inline; raw outputs are in `skills-eval-workspace/iteration-1/<skill>/<model>/{with_skill,baseline}.md` (git-ignored) for inspection.
+- With-skill and baseline ran on the same model, so each pair isolates the *skill's* contribution, not the model's.
 
 
 > **Full record:** every per-skill input prompt, the skill used, both outputs verbatim, and the assertion-by-assertion grading are in [`EVAL-DETAIL.md`](EVAL-DETAIL.md).
