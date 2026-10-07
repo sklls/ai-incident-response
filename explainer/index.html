@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oversight Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#0E1116; --surface:#161B22; --surface2:#1C2430; --line:#273142;
+    --ink:#E6EDF3; --muted:#8A97A8; --faint:#5A6676;
+    --s1:#FF4D4D; --s2:#FF8A3D; --s3:#F2C14E; --s4:#5BD08A;
+    --agent:#9A8CFF; --gate:#2DD4BF; --broken:#FF4D4D;
+    --maxw:1120px; --prose:66ch;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --sans:"Archivo",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(1200px 600px at 85% -10%, rgba(45,212,191,.06), transparent 60%),
+      radial-gradient(900px 500px at 0% 0%, rgba(154,140,255,.05), transparent 55%);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  p{max-width:var(--prose)}
+  a{color:var(--gate);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h1,h2,h3{font-weight:800;line-height:1.05;letter-spacing:-.02em;margin:0}
+  h2{font-size:clamp(28px,4vw,42px);margin-bottom:10px}
+  h3{font-size:20px;font-weight:700;letter-spacing:-.01em}
+  .mono{font-family:var(--mono)}
+  section{padding:84px 0;border-top:1px solid var(--line)}
+  .lead{color:var(--muted);font-size:clamp(17px,2vw,20px);max-width:60ch}
+  .kicker{font-size:13px;font-weight:600;color:var(--gate);font-family:var(--mono);margin-bottom:18px}
+
+  /* ---------- top bar ---------- */
+  header.bar{position:sticky;top:0;z-index:50;background:rgba(14,17,22,.82);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .bar .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em}
+  .brand .dot{width:11px;height:11px;border-radius:3px;background:var(--gate);
+    box-shadow:0 0 14px var(--gate)}
+  .bar nav{display:flex;gap:22px;font-size:14px;color:var(--muted)}
+  .bar nav a{color:var(--muted)}.bar nav a:hover{color:var(--ink);text-decoration:none}
+  @media(max-width:720px){.bar nav{display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{padding:96px 0 72px}
+  .hero h1{font-size:clamp(40px,7vw,86px);letter-spacing:-.035em;max-width:14ch}
+  .hero h1 .q{color:var(--muted);font-weight:500}
+  .hero .lead{margin-top:22px}
+  .hero .meta{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--muted)}
+  .chip b{color:var(--ink);font-weight:600}
+
+  /* ---------- pipeline ---------- */
+  .pipe{position:relative;margin-top:52px;padding:30px 0 10px}
+  .track{position:relative;display:flex;align-items:stretch;gap:0}
+  .seg{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;min-width:0}
+  .rail{position:absolute;top:34px;left:0;right:0;height:2px;background:var(--line);z-index:0}
+  .node{position:relative;z-index:2;width:68px;height:68px;border-radius:16px;border:1px solid var(--line);
+    background:var(--surface);display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:22px;color:var(--faint);transition:all .45s ease}
+  .node.lit{color:var(--ink);border-color:var(--gate);box-shadow:0 0 0 1px var(--gate),0 0 26px rgba(45,212,191,.28)}
+  .node.gate{border-style:dashed}
+  .node.gate.lit{border-color:var(--gate)}
+  .node.hold{border-color:var(--s1);box-shadow:0 0 0 1px var(--s1),0 0 26px rgba(255,77,77,.35);color:#fff}
+  .seg .lbl{margin-top:12px;font-size:12.5px;color:var(--muted);text-align:center;font-weight:500;letter-spacing:.01em}
+  .seg .ph{font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .gateflag{position:absolute;top:-30px;font-family:var(--mono);font-size:10.5px;color:var(--gate);
+    border:1px solid var(--gate);border-radius:6px;padding:2px 7px;opacity:0;transform:translateY(6px);transition:.3s;white-space:nowrap}
+  .gateflag.show{opacity:1;transform:translateY(0)}
+  .gateflag.hold{color:var(--s1);border-color:var(--s1)}
+  #token{position:absolute;top:19px;width:18px;height:18px;border-radius:50%;
+    background:var(--agent);box-shadow:0 0 18px var(--agent);z-index:3;left:0;
+    transition:left 1s cubic-bezier(.5,0,.2,1)}
+  .status{margin-top:26px;font-family:var(--mono);font-size:13px;color:var(--muted);min-height:20px}
+  .status b{color:var(--ink);font-weight:600}
+  .status .pulse{color:var(--s1)}
+
+  /* ---------- grid helpers ---------- */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+
+  /* ---------- architecture ---------- */
+  .arch{margin-top:44px;border:1px solid var(--line);border-radius:18px;background:var(--surface);
+    padding:26px;position:relative;overflow:hidden}
+  .tierrow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:14px 0}
+  .tiertag{font-family:var(--mono);font-size:11px;color:var(--faint);width:112px;flex:none}
+  @media(max-width:620px){.tiertag{width:100%}}
+  .box{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--surface2);
+    font-weight:600;font-size:14px;transition:.35s}
+  .box.cmd{border-color:var(--ink);color:var(--ink)}
+  .box.life{color:var(--ink)}
+  .box.spec{border-color:rgba(242,193,78,.5)}
+  .box.gov{border-color:rgba(45,212,191,.45);color:#cfeeea}
+  .arch.go .box{animation:boxin .5s backwards}
+  .arch.go .box:nth-child(2){animation-delay:.05s}
+  @keyframes boxin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .calls{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:16px;border-top:1px dashed var(--line);padding-top:14px}
+  .calls .ln{opacity:.25}
+  .calls .ln.on{opacity:1;color:var(--ink)}
+  .calls .ar{color:var(--gate)}
+
+  /* ---------- gate demo ---------- */
+  .gatebox{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:0;overflow:hidden}
+  .gatebox .screen{padding:28px 26px;min-height:230px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+  .actorline{display:flex;align-items:center;gap:12px;font-size:15px;opacity:.35;transition:.4s}
+  .actorline.on{opacity:1}
+  .dotb{width:12px;height:12px;border-radius:50%;flex:none}
+  .dotb.agent{background:var(--agent)} .dotb.human{background:var(--gate)} .dotb.sys{background:var(--muted)}
+  .pendcard{border:1px solid var(--s1);border-radius:12px;padding:14px 16px;background:rgba(255,77,77,.06);
+    opacity:0;max-height:0;overflow:hidden;transition:.45s}
+  .pendcard.on{opacity:1;max-height:160px}
+  .pendcard .t{color:var(--s1);font-family:var(--mono);font-size:12px;margin-bottom:6px}
+  .pendcard .btns{display:flex;gap:8px;margin-top:12px}
+  .pendcard .btns span{border-radius:8px;padding:6px 14px;font-size:13px;font-weight:700}
+  .ok{background:var(--gate);color:#06201d}.no{background:transparent;border:1px solid var(--broken);color:var(--broken)}
+  .rule{font-family:var(--mono);font-size:13px;color:var(--gate);border-left:2px solid var(--gate);padding-left:12px}
+
+  /* ---------- skills ---------- */
+  .tierhead{display:flex;align-items:baseline;gap:14px;margin:38px 0 14px}
+  .tierhead .n{font-family:var(--mono);color:var(--gate);font-size:13px}
+  .tierhead h3{font-size:17px}
+  .tierhead .d{color:var(--muted);font-size:14px}
+  .skill{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:10px;overflow:hidden}
+  .skill summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;
+    gap:14px;align-items:center;padding:15px 18px}
+  .skill summary::-webkit-details-marker{display:none}
+  .skill .name{font-family:var(--mono);font-weight:600;font-size:14.5px;color:var(--ink)}
+  .skill .job{color:var(--muted);font-size:14px;min-width:0}
+  @media(max-width:680px){.skill summary{grid-template-columns:1fr}.skill .job{grid-column:1}}
+  .skill .plus{color:var(--faint);transition:.3s;font-size:18px}
+  .skill[open] .plus{transform:rotate(45deg);color:var(--gate)}
+  .skill .body{padding:0 18px 18px;border-top:1px solid var(--line);margin-top:0;display:grid;gap:10px}
+  .skill .body .row{display:flex;gap:10px;font-size:13.5px}
+  .skill .body .k{font-family:var(--mono);font-size:11px;color:var(--faint);width:94px;flex:none;padding-top:2px}
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;border:1px solid var(--line);
+    border-radius:6px;padding:2px 7px;margin:2px 4px 2px 0;color:var(--muted)}
+  .bar2{width:7px;align-self:stretch}
+  .b-cmd{background:var(--ink)} .b-life{background:var(--gate)} .b-spec{background:var(--s3)} .b-gov{background:var(--agent)}
+
+  /* ---------- scenarios ---------- */
+  .scn{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:22px;display:flex;flex-direction:column;gap:14px}
+  .scn .sev{font-family:var(--mono);font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;align-self:flex-start}
+  .scn h3{font-size:16px}
+  .scn .shape{font-family:var(--mono);font-size:12px;color:var(--gate);border:1px dashed var(--gate);border-radius:8px;padding:8px 10px}
+  .scn ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px}.scn li{margin:4px 0}
+  .mini{display:flex;gap:4px;align-items:center}
+  .mini i{height:6px;border-radius:3px;background:var(--line);flex:1;transition:.5s}
+  .mini i.on{background:var(--gate)}
+
+  /* ---------- ledger ---------- */
+  .ledger{display:flex;flex-wrap:wrap;gap:0;align-items:stretch;margin-top:30px}
+  .blk{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;min-width:172px;position:relative;flex:1}
+  .blk + .blk{margin-left:30px}
+  .blk + .blk::before{content:"";position:absolute;left:-31px;top:50%;width:30px;height:2px;background:var(--gate)}
+  .blk.broken{border-color:var(--broken);background:rgba(255,77,77,.06)}
+  .blk.broken + .blk::before,.blk.brokenlink::before{background:var(--broken) !important;
+    background-image:repeating-linear-gradient(90deg,var(--broken) 0 4px,transparent 4px 8px) !important}
+  .blk .seq{font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .blk .act{font-size:13.5px;font-weight:600;margin:6px 0 8px}
+  .blk .who{font-family:var(--mono);font-size:11px}
+  .blk .who.agent{color:var(--agent)}.blk .who.human{color:var(--gate)}.blk .who.sys{color:var(--muted)}
+  .blk .hash{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:8px;word-break:break-all}
+  .ledgerctl{display:flex;gap:10px;align-items:center;margin-top:22px;flex-wrap:wrap}
+  button.btn{font-family:var(--sans);font-weight:600;font-size:14px;border-radius:9px;padding:9px 16px;cursor:pointer;border:1px solid var(--line);background:var(--surface2);color:var(--ink)}
+  button.btn.danger{border-color:var(--broken);color:var(--broken)}
+  button.btn:hover{border-color:var(--gate)}
+  .verdict{font-family:var(--mono);font-size:13px;padding:6px 12px;border-radius:8px}
+  .verdict.ok{color:var(--gate);border:1px solid var(--gate)}
+  .verdict.bad{color:var(--broken);border:1px solid var(--broken)}
+
+  footer{padding:70px 0;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<header class="bar"><div class="wrap">
+  <div class="brand"><span class="dot"></span> Oversight Library</div>
+  <nav>
+    <a href="#library">Library</a>
+    <a href="#gate">The gate</a>
+    <a href="#skills">Skills</a>
+    <a href="#scenarios">Scenarios</a>
+    <a href="#ledger">Evidence</a>
+  </nav>
+</div></header>
+
+<!-- HERO -->
+<div class="wrap hero">
+  <p class="kicker">Responsible AI &amp; Governance · AI Incident Response</p>
+  <h1>When an AI misbehaves, <span class="q">what happens next?</span></h1>
+  <p class="lead">A library of 14 governance skills runs every incident through one disciplined
+    lifecycle — and stops, every time, for a human to decide. Watch an incident move through it.</p>
+
+  <div class="pipe">
+    <div class="track" id="track">
+      <div class="seg"><div class="rail"></div><div class="node lit" data-i="0">1</div><div class="lbl">Triage</div><div class="ph mono">detect</div></div>
+      <div class="seg"><div class="rail"></div><div class="node gate" data-i="1"><span class="gateflag" data-i="1">human gate</span>2</div><div class="lbl">Contain</div><div class="ph mono">respond</div></div>
+      <div class="seg"><div class="rail"></div><div class="node" data-i="2">3</div><div class="lbl">Investigate</div><div class="ph mono">analyze</div></div>
+      <div class="seg"><div class="rail"></div><div class="node gate" data-i="3"><span class="gateflag" data-i="3">human gate</span>4</div><div class="lbl">Remediate</div><div class="ph mono">recover</div></div>
+      <div class="seg"><div class="rail"></div><div class="node gate" data-i="4"><span class="gateflag" data-i="4">human gate</span>5</div><div class="lbl">Communicate</div><div class="ph mono">report</div></div>
+      <div class="seg"><div class="rail"></div><div class="node" data-i="5">6</div><div class="lbl">Post-mortem</div><div class="ph mono">improve</div></div>
+      <div class="seg"><div class="rail"></div><div class="node" data-i="6">✓</div><div class="lbl">Closed</div><div class="ph mono">recorded</div></div>
+      <div id="token"></div>
+    </div>
+    <div class="status" id="status">Incident reported. Beginning triage…</div>
+  </div>
+
+  <div class="meta">
+    <span class="chip"><b>14</b> skills</span>
+    <span class="chip"><b>6</b> lifecycle phases</span>
+    <span class="chip"><b>3</b> failure types</span>
+    <span class="chip">rule: <b>no record, no action</b></span>
+  </div>
+</div>
+
+<!-- LIBRARY / ARCHITECTURE -->
+<section id="library"><div class="wrap">
+  <p class="kicker">how the library is built</p>
+  <h2>One commander, four tiers</h2>
+  <p class="lead">The library isn't a pile of prompts. It's a chain of command: an orchestrator that
+    runs the lifecycle, a specialist it consults for each kind of failure, and shared governance parts
+    every step relies on.</p>
+
+  <div class="arch" id="arch">
+    <div class="tierrow"><span class="tiertag">tier 0 · boss</span>
+      <span class="box cmd">incident-commander</span></div>
+    <div class="tierrow"><span class="tiertag">tier 1 · lifecycle</span>
+      <span class="box life">triage</span><span class="box life">contain</span><span class="box life">investigate</span>
+      <span class="box life">remediate</span><span class="box life">communicate</span><span class="box life">post-mortem</span></div>
+    <div class="tierrow"><span class="tiertag">tier 2 · specialists</span>
+      <span class="box spec">privacy-breach</span><span class="box spec">fairness-bias</span><span class="box spec">agent-autonomy</span></div>
+    <div class="tierrow"><span class="tiertag">tier 3 · governance</span>
+      <span class="box gov">severity-matrix</span><span class="box gov">approval-gate</span><span class="box gov">audit-ledger</span><span class="box gov">regulatory-map</span></div>
+
+    <div class="calls mono" id="calls">
+      <div class="ln"><span class="ar">▸</span> commander <span class="ar">calls</span> triage <span class="ar">→</span> consults a specialist <span class="ar">→</span> scores with severity-matrix</div>
+      <div class="ln"><span class="ar">▸</span> reaches a consequential step <span class="ar">→</span> opens approval-gate <span class="ar">→</span> <b>waits</b></div>
+      <div class="ln"><span class="ar">▸</span> every action <span class="ar">→</span> written to audit-ledger (append-only, tamper-evident)</div>
+      <div class="ln"><span class="ar">▸</span> before any notice <span class="ar">→</span> regulatory-map sets the obligations &amp; deadlines</div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:28px">
+    <p>Each skill does <b>one</b> job, so you can read it, trust it, and reuse it across every scenario.
+      The lifecycle (tier 1) is the shared spine; the specialist (tier 2) changes <i>what</i> is detected
+      and <i>how</i> you contain; the governance parts (tier 3) make oversight consistent instead of
+      improvised.</p>
+    <p>The design is traceable on purpose: every skill is headed by the framework it enforces —
+      EY's agent guardrails, NIST, the four-fifths rule, India's DPDP Act &amp; IT Act §11, ISO/IEC 42001.
+      The library <i>is</i> the governance framework, made runnable.</p>
+  </div>
+</div></section>
+
+<!-- GATE -->
+<section id="gate"><div class="wrap">
+  <p class="kicker">the one rule that matters</p>
+  <h2>The agent can propose. Only a person approves.</h2>
+  <p class="lead">Before anything consequential — shutting a system down, deploying a fix, sending a
+    notice — the agent stops and asks. And it only believes the answer if it's <i>written down</i>.</p>
+
+  <div class="grid2" style="margin-top:40px;align-items:start">
+    <div class="gatebox"><div class="screen" id="gatescreen">
+      <div class="actorline" data-s="0"><span class="dotb sys"></span> Incident opened — severity set <b style="margin-left:4px">S1</b></div>
+      <div class="actorline" data-s="1"><span class="dotb agent"></span> Agent proposes: <b style="margin-left:4px">freeze outbound payments</b></div>
+      <div class="pendcard" data-s="2">
+        <div class="t">awaiting human approval</div>
+        <div>Freeze outbound payments · blast radius: all · Sev S1</div>
+        <div class="btns"><span class="ok">Approve</span><span class="no">Reject</span></div>
+      </div>
+      <div class="actorline" data-s="3"><span class="dotb human"></span> Human approves — recorded in the ledger</div>
+      <div class="actorline" data-s="4"><span class="dotb agent"></span> Agent re-reads the record, then acts</div>
+    </div></div>
+
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <p>A click in a browser can't nudge the agent along. So the agent writes the request, <b>pauses its
+        turn</b>, and only continues once it reads an <span class="mono">approved</span> record in the
+        database — not a spoken "go ahead".</p>
+      <div class="rule">if the record says <b>pending</b> → it refuses and waits.<br>
+        if it says <b>rejected</b> → it holds, and proposes another way.<br>
+        no record, no action.</div>
+      <p style="color:var(--muted);font-size:15px">Every outcome — approve, reject, or still-waiting —
+        and <i>who</i> decided it, lands permanently in the audit trail. That's what makes oversight
+        provable instead of remembered.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- SKILLS -->
+<section id="skills"><div class="wrap">
+  <p class="kicker">every skill, one job</p>
+  <h2>The fourteen, up close</h2>
+  <p class="lead">Open any skill to see what it does, the course framework it enforces, and which records
+    it reads or writes. Colour marks the tier.</p>
+
+  <div id="skillcat" style="margin-top:30px"></div>
+</div></section>
+
+<!-- SCENARIOS -->
+<section id="scenarios"><div class="wrap">
+  <p class="kicker">same spine, three failures</p>
+  <h2>One lifecycle, three shapes of "stop it"</h2>
+  <p class="lead">The steps never change. The specialist changes what gets detected, how you contain,
+    and which law applies — and containment looks different every time.</p>
+
+  <div class="grid3" style="margin-top:40px" id="scnwrap">
+    <div class="scn" data-shape>
+      <span class="sev" style="background:rgba(255,77,77,.15);color:var(--s1)">S1 · privacy</span>
+      <h3>Chatbot leaks another customer's data</h3>
+      <div class="mini"><i></i><i></i><i></i><i></i></div>
+      <div class="shape">contain by: shutting it down</div>
+      <ul>
+        <li>scope it: one conversation, or many?</li>
+        <li>cause: cache served across sessions</li>
+        <li>clocks: CERT-In 6h · DPDP 72h</li>
+      </ul>
+    </div>
+    <div class="scn" data-shape>
+      <span class="sev" style="background:rgba(242,193,78,.15);color:var(--s3)">S2 · fairness</span>
+      <h3>Hiring tool rejects one group more</h3>
+      <div class="mini"><i></i><i></i><i></i><i></i></div>
+      <div class="shape">contain by: routing to human review</div>
+      <ul>
+        <li>test: four-fifths <i>and</i> significance</li>
+        <li>cause: a proxy feature for a protected trait</li>
+        <li>law: Art. 14/15 · NITI · (EEOC)</li>
+      </ul>
+    </div>
+    <div class="scn" data-shape>
+      <span class="sev" style="background:rgba(255,77,77,.15);color:var(--s1)">S1 · autonomy</span>
+      <h3>Finance agent pays beyond its limit</h3>
+      <div class="mini"><i></i><i></i><i></i><i></i></div>
+      <div class="shape">contain by: revoking its authority</div>
+      <ul>
+        <li>cause: prompt injection in an invoice field</li>
+        <li>fix: a hard limit outside the model</li>
+        <li>law: IT Act §11 · RBI FREE-AI</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- LEDGER -->
+<section id="ledger"><div class="wrap">
+  <p class="kicker">the evidence chain</p>
+  <h2>A record no one can quietly rewrite</h2>
+  <p class="lead">Every action is a block, locked to the one before it. Change a past block and the links
+    break — visibly. Try it.</p>
+
+  <div class="ledger" id="chain">
+    <div class="blk"><div class="seq">#1 · 14:02</div><div class="act">incident opened</div><div class="who sys">system · intake</div><div class="hash">0f96…20a6</div></div>
+    <div class="blk"><div class="seq">#2 · 14:02</div><div class="act">severity set S1</div><div class="who agent">agent · commander</div><div class="hash">10bc…cd2a</div></div>
+    <div class="blk"><div class="seq">#3 · 14:03</div><div class="act">request: freeze payments</div><div class="who agent">agent · commander</div><div class="hash">8f44…a2d0</div></div>
+    <div class="blk"><div class="seq">#4 · 14:05</div><div class="act">approved freeze payments</div><div class="who human">human · R. Mehta</div><div class="hash">c1d2…9b17</div></div>
+  </div>
+
+  <div class="ledgerctl">
+    <button class="btn danger" id="tamper">Tamper with record #2</button>
+    <button class="btn" id="restore">Restore</button>
+    <span class="verdict ok" id="verdict">⛓ chain verified</span>
+  </div>
+  <p style="color:var(--muted);font-size:15px;margin-top:20px">That's the whole promise of the system:
+    the computer does the careful steps, a person is always the one who says yes or no, and the record
+    is built so nobody can fake it afterward.</p>
+</div></section>
+
+<footer><div class="wrap">
+  <div>Oversight Library — a teaching companion to the AI Incident Response project.<br>
+    <span style="color:var(--faint)">Responsible AI &amp; Governance · built on the course frameworks.</span></div>
+  <div style="font-family:var(--mono);font-size:12px;color:var(--faint)">triage · contain · investigate · remediate · communicate · post-mortem</div>
+</div></footer>
+
+<script>
+const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------------- HERO PIPELINE ---------------- */
+(function(){
+  const track=document.getElementById('track');
+  const token=document.getElementById('token');
+  const nodes=[...track.querySelectorAll('.node')];
+  const status=document.getElementById('status');
+  const gates={1:'Contain',3:'Remediate',4:'Communicate'};
+  const names=['Triage','Contain','Investigate','Remediate','Communicate','Post-mortem','Closed'];
+  function center(n){const r=n.getBoundingClientRect(),t=track.getBoundingClientRect();
+    return r.left-t.left+r.width/2-9;}
+  function place(i){token.style.left=center(nodes[i])+'px';}
+  if(reduce){nodes.forEach(n=>n.classList.add('lit'));place(6);
+    status.innerHTML='Incident closed — fully recorded in the audit ledger.';return;}
+  place(0);
+  let i=0;
+  const say=(h)=>status.innerHTML=h;
+  async function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+  async function run(){
+    nodes.forEach(n=>n.classList.remove('lit','hold'));
+    document.querySelectorAll('.gateflag').forEach(f=>f.classList.remove('show','hold'));
+    nodes[0].classList.add('lit'); say('Incident reported. Beginning <b>triage</b>…'); await wait(1100);
+    for(i=1;i<nodes.length;i++){
+      place(i);
+      if(gates[i]){
+        const flag=document.querySelector('.gateflag[data-i="'+i+'"]');
+        nodes[i].classList.add('hold'); flag && (flag.classList.add('show','hold'), flag.textContent='awaiting approval');
+        say('Reached <b>'+names[i]+'</b> — <span class="pulse">paused for human approval…</span>');
+        await wait(1500);
+        nodes[i].classList.remove('hold'); nodes[i].classList.add('lit');
+        flag && (flag.classList.remove('hold'), flag.textContent='approved ✓');
+        say('<b>'+names[i]+'</b> approved by a human — proceeding.');
+        await wait(1000);
+      } else {
+        nodes[i].classList.add('lit');
+        say(i===6?'Incident <b>closed</b> — every step recorded in the ledger.'
+                 :'Working through <b>'+names[i]+'</b>…');
+        await wait(1000);
+      }
+    }
+    await wait(2200); place(0); await wait(400); run();
+  }
+  // start when hero is visible
+  new IntersectionObserver((e,o)=>{if(e[0].isIntersecting){run();o.disconnect();}},{threshold:.3})
+    .observe(track);
+  addEventListener('resize',()=>place(i));
+})();
+
+/* ---------------- ARCHITECTURE call lines ---------------- */
+(function(){
+  const arch=document.getElementById('arch');
+  const lines=[...document.querySelectorAll('#calls .ln')];
+  new IntersectionObserver((e,o)=>{
+    if(!e[0].isIntersecting)return; o.disconnect(); arch.classList.add('go');
+    if(reduce){lines.forEach(l=>l.classList.add('on'));return;}
+    lines.forEach((l,k)=>setTimeout(()=>l.classList.add('on'),500+k*650));
+  },{threshold:.3}).observe(arch);
+})();
+
+/* ---------------- GATE micro-demo loop ---------------- */
+(function(){
+  const screen=document.getElementById('gatescreen');
+  const steps=[...screen.querySelectorAll('[data-s]')];
+  if(reduce){steps.forEach(s=>s.classList.add('on'));return;}
+  let started=false;
+  function cycle(){
+    steps.forEach(s=>s.classList.remove('on'));
+    let k=0;
+    const t=setInterval(()=>{
+      steps[k].classList.add('on'); k++;
+      if(k>=steps.length){clearInterval(t);setTimeout(cycle,2600);}
+    },1050);
+  }
+  new IntersectionObserver((e,o)=>{if(e[0].isIntersecting&&!started){started=true;cycle();o.disconnect();}},{threshold:.4})
+    .observe(screen);
+})();
+
+/* ---------------- SKILLS catalogue ---------------- */
+(function(){
+  const data=[
+    {tier:'Tier 0 · the boss',cls:'b-cmd',d:'runs the whole incident',items:[
+      ['incident-commander','runs an incident through the full lifecycle and enforces the gates','NIST GOVERN · ISO 42001 A.10 · CSF 2.0','reads/writes everything']
+    ]},
+    {tier:'Tier 1 · the lifecycle',cls:'b-life',d:'the same six steps, every time',items:[
+      ['incident-triage','takes in the report, scores severity, assigns an owner','blast radius · OECD harm type · NIST 600-1','writes severity, owner'],
+      ['incident-contain','stops the harm spreading — behind a human gate','EY kill-switch · OpenAI confirm · SAIF','opens approval-gate'],
+      ['incident-investigate','reads the evidence and finds the real cause','Anthropic · OWASP · MITRE ATLAS','reads evidence, writes cause'],
+      ['incident-remediate','deploys and validates the fix — behind a gate','EY guardrails 1–5 · drift detectors','opens approval-gate'],
+      ['incident-communicate','drafts the notices, sends only after a gate','DPDP · CERT-In · EU Art.73 clocks','opens approval-gate'],
+      ['incident-postmortem','records how to prevent it, then closes','ISO 42001 A.10 · launch checklists','writes controls, closes']
+    ]},
+    {tier:'Tier 2 · the specialists',cls:'b-spec',d:'one per kind of failure',items:[
+      ['privacy-breach','scope the leak, shut it down, start the breach clock','OWASP LLM02 · DPDP · IT Act §43A','advises the lifecycle'],
+      ['fairness-bias','measure disparate impact, route to human review','four-fifths + significance · EEOC','advises the lifecycle'],
+      ['agent-autonomy','separate injection vs misconfig vs defect; revoke authority','EY 6 guardrails · OpenAI §3 · IT Act §11 · RBI FREE-AI','advises the lifecycle']
+    ]},
+    {tier:'Tier 3 · the governance parts',cls:'b-gov',d:'shared, always-on',items:[
+      ['severity-matrix','scores S1–S4; unknown scope counts as worst','blast radius · EU Art.73 bands','writes severity'],
+      ['approval-gate','requests a human yes/no; proceeds only on an approved record','EY escalation · OpenAI confirm','writes approvals + ledger'],
+      ['audit-ledger','writes every action into the tamper-evident chain','EY traceability · CERT-In 180-day log','append-only ledger'],
+      ['regulatory-map','maps the incident to its laws and deadlines','DPDP · IT Act · NITI · RBI · EU','writes obligations']
+    ]}
+  ];
+  const cat=document.getElementById('skillcat');
+  data.forEach(group=>{
+    const h=document.createElement('div');h.className='tierhead';
+    h.innerHTML='<span class="n">'+group.tier.split(' · ')[0]+'</span><h3>'+group.tier.split(' · ')[1]+'</h3><span class="d">'+group.d+'</span>';
+    cat.appendChild(h);
+    group.items.forEach(it=>{
+      const d=document.createElement('details');d.className='skill';
+      d.innerHTML=
+        '<summary><span class="bar2 '+group.cls+'" style="border-radius:3px"></span>'+
+        '<span style="display:flex;gap:14px;align-items:center;min-width:0;flex-wrap:wrap">'+
+        '<span class="name">'+it[0]+'</span><span class="job">'+it[1]+'</span></span>'+
+        '<span class="plus">+</span></summary>'+
+        '<div class="body"><div class="row"><span class="k">enforces</span><span>'+
+        it[2].split(' · ').map(t=>'<span class="tag">'+t+'</span>').join('')+'</span></div>'+
+        '<div class="row"><span class="k">records</span><span style="color:var(--muted);padding-top:1px">'+it[3]+'</span></div></div>';
+      cat.appendChild(d);
+    });
+  });
+})();
+
+/* ---------------- SCENARIOS mini-pipelines ---------------- */
+(function(){
+  const cards=[...document.querySelectorAll('#scnwrap .scn')];
+  cards.forEach(c=>{
+    const io=new IntersectionObserver((es,o)=>{
+      es.forEach(e=>{
+        if(!e.isIntersecting)return;
+        const bars=[...e.target.querySelectorAll('.mini i')];
+        if(reduce){bars.forEach(b=>b.classList.add('on'));}
+        else bars.forEach((b,k)=>setTimeout(()=>b.classList.add('on'),200+k*320));
+        o.disconnect();
+      });
+    },{threshold:.5});
+    io.observe(c);
+  });
+})();
+
+/* ---------------- LEDGER tamper ---------------- */
+(function(){
+  const chain=document.getElementById('chain');
+  const blocks=[...chain.querySelectorAll('.blk')];
+  const verdict=document.getElementById('verdict');
+  const orig=blocks[1].querySelector('.act').textContent;
+  document.getElementById('tamper').onclick=()=>{
+    blocks[1].classList.add('broken');
+    blocks[1].querySelector('.act').textContent='approved nothing';
+    // break links from the tampered block onward
+    blocks.forEach((b,k)=>{if(k>=2)b.classList.add('brokenlink');});
+    verdict.textContent='⛓ BROKEN @ block #2'; verdict.className='verdict bad';
+  };
+  document.getElementById('restore').onclick=()=>{
+    blocks[1].classList.remove('broken');
+    blocks[1].querySelector('.act').textContent=orig;
+    blocks.forEach(b=>b.classList.remove('brokenlink'));
+    verdict.textContent='⛓ chain verified'; verdict.className='verdict ok';
+  };
+})();
+</script>
+</body>
+</html>
