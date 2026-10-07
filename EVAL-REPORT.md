@@ -83,3 +83,6 @@ Score = assertions met (partial = 0.5). "Δ" = with-skill minus baseline.
 - One model (Sonnet), one prompt per skill, one run each — enough to show direction, not a large-N statistic. The repeatable, high-N part of the eval is the 48 logic tests.
 - Grading used objective assertions scored inline; raw outputs are in `skills-eval-workspace/iteration-1/<skill>/{with_skill,baseline}.md` (git-ignored) for inspection.
 - With-skill and baseline ran on the same model, so this isolates the *skill's* contribution, not the model's.
+
+
+> **Full record:** every per-skill input prompt, the skill used, both outputs verbatim, and the assertion-by-assertion grading are in [`EVAL-DETAIL.md`](EVAL-DETAIL.md).

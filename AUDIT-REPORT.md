@@ -64,3 +64,6 @@ The Haiku baseline made exactly the mistake the discipline exists to prevent —
 
 ## Bottom line
 **With the skills, Opus = Sonnet = Haiku ≈ 100% and agree with each other. Without them, quality falls with model price and the cheapest model makes the one genuinely harmful call.** The library levels the field — and it earns its keep most on the model you'd actually want to run at scale.
+
+
+> **Full record:** every input prompt, the skills used, the rubric grading, and all 18 outputs verbatim (with and without the library, per model) are in [`AUDIT-DETAIL.md`](AUDIT-DETAIL.md).
