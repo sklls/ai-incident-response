@@ -12,7 +12,7 @@ Incident response is a recognised discipline, not improvisation. The field's two
 The commander's job is **sequencing and accountability**, which maps to NIST AI RMF's **GOVERN** (the accountability architecture) and **MANAGE** (prioritise and respond) functions. Three ideas govern how it runs. First, containment precedes understanding — you stop harm before you know the cause, because every minute of investigation is more exposure. Second, consequential actions are gated: the commander can investigate, analyse, score, draft and log on its own, but containment, remediation and external notices require a human-approved record, never a verbal "go ahead". Third, the record is the product — if a decision isn't in the tamper-evident ledger with who made it and why, it didn't happen, and the incident can't be defended to an auditor or regulator. This is why Gartner finds 40%+ of agentic projects fail on weak risk controls: the controls exist on paper but not in the run.
 
 ### Sources
-NIST SP 800-61r3 (Incident Response, 2025); ISO/IEC 42001:2023 Annex A.10; NIST AI RMF 1.0 (GOVERN, MANAGE); KPMG India Architecture of Trust (10 pillars); Microsoft AI Governance Maturity Model; enterprise "10 program questions".
+NIST SP 800-61r3 (Incident Response, 2025); ISO/IEC 42001:2023 Annex A.10; NIST AI RMF 1.0 (GOVERN, MANAGE); KPMG India Architecture of Trust (10 pillars); Microsoft AI Governance Maturity Model.
 
 ## Reads
 the incoming report; the `incidents` record; approval decisions from `approvals`; the `ledger` head.

@@ -759,7 +759,7 @@ Per fairness-bias specialist: **DO NOT SHUT DOWN** (denies all applicants equal 
 ---
 
 ## 7. PREVENTIVE CONTROLS (Post-Mortem)
-Controls to prevent recurrence (per agentic 10-question launch checklist + manager's 10 governance questions):
+Controls to prevent recurrence (agent-readiness and model-governance controls):
 
 1. **Pre-deployment fairness audit (required):**
    - Owner: Data Science Lead
@@ -1142,7 +1142,7 @@ I cannot verify the owner, payment count, whether this is a regulated entity, or
 **GATE: Each external send requires approval.**
 
 ## 6. POSTMORTEM (incident-postmortem)
-**Controls Installed (agentic 10-question + manager's 10-governance):**
+**Controls Installed (agent-readiness and model-governance):**
 
 1. **Spend Limit Enforcement (Owner: Engineering):** Move from prompt-only to deterministic code-level check. Alert: limit-override attempts.
 2. **Input Sanitization (Owner: Data):** Scrub free-text agent inputs; allowlist trusted invoice sources; log all sanitizations.

@@ -12,7 +12,7 @@ The gate is the mechanism that turns "human oversight" from a principle into an 
 So the gate's discipline is: the agent **acts only on a recorded decision**, never on conversation. It reads the state and branches — no matching record means it must file a request and wait; pending means hold; approved means proceed; rejected means hold and offer another way. This is the operational form of **EY's guardrail 6** (human escalation with approval thresholds and a kill-switch), **OpenAI's confirmation flows** ("100% confirmation before completing financial transactions"), and the EU AI Act's human-oversight requirement. The separation is strict: the agent may *propose*, a *human* approves, and the decision — with the approver's name — is sealed into the ledger. That is what makes the difference between oversight you can prove and oversight you merely remember.
 
 ### Sources
-EY Agentic AI Governance (guardrail 6 — human escalation); OpenAI System Card §3 (confirmation flows); Anthropic (approval-fatigue finding); agentic launch-checklist #5 (confirmation thresholds). EU AI Act Art. 14 (human oversight, comparison).
+EY Agentic AI Governance (guardrail 6 — human escalation); OpenAI System Card §3 (confirmation flows); Anthropic (approval-fatigue finding); confirmation thresholds for consequential agent actions. EU AI Act Art. 14 (human oversight, comparison).
 
 ## Reads
 the `approvals` collection for the current request; the console surfaces the request to a human.

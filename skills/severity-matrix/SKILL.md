@@ -12,7 +12,7 @@ Severity is the shared unit of urgency, and its value is coordination: a single 
 The one firm habit is the **fail-safe default**: when blast radius is unknown, score it as the worst case, never the best. Under-triage is the dangerous error — a real emergency filed as routine loses the containment window and the notification clock. The tiers also carry downstream meaning: S1 and S2 **auto-escalate** to a named owner at once, and the top band lines up with the **EU AI Act Art. 73** notion of a serious incident (death, critical-infrastructure disruption, or widespread harm), which is what triggers the tightest reporting deadlines. Severity is re-run, not set once — as scope resolves from "unknown" to "three sessions" or "ten thousand", the grade and the obligations move with it.
 
 ### Sources
-"Blast radius" (agentic terminology, Session 4); NIST AI 600-1 risk tagging; EU AI Act Art. 73 serious-incident bands; enterprise program-question "tiers"; manager's governance Q1 ("what happens when it fails?").
+"Blast radius" (agentic terminology); NIST AI 600-1 risk tagging; EU AI Act Art. 73 serious-incident bands.
 
 ## Reads
 the four inputs from triage/specialist: `blastRadius`, `dataSensitivity`, `reversibility`, `ongoing`.

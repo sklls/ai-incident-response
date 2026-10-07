@@ -1479,7 +1479,7 @@ Automated financial actions require layered controls—limits, idempotency, and 
 ## 1. Timeline (reconstructed from the append-only ledger)
 Detection, containment, remediation, and communication entries are read in order from the sealed `ledger` for this incident, plus the `incidents` record and the monitoring control from `incident-remediate`. The timeline is only trustworthy because the ledger is append-only.
 
-## 2. Gaps found (agentic 10-question launch checklist and manager's 10 governance questions)
+## 2. Gaps found (agent-readiness and model-governance controls)
 - No hard spending limit outside the model (least-privilege, written constraints).
 - No human confirmation threshold on money-moving actions.
 - No alert on limit-override attempts or drift.
@@ -1573,7 +1573,7 @@ The finance agent issued payments above the amounts owed. Payments were halted, 
 | 2026-10-07 14:05Z | PayAgent executes pay() 4 times, each call exceeding cap | tool-call-log |
 | 2026-10-07 14:06Z | Incident opened; IR-Commander engaged | incidents.json |
 
-## Gap Analysis: Agentic 10-Question Launch Checklist
+## Gap Analysis: Agent-Readiness Controls
 
 **Gap 1: Written Constraints (Not Hardened)**  
 Spend cap exists only in system prompt text, vulnerable to prompt injection. 
@@ -1590,7 +1590,7 @@ Vendor notes field parsed as agent instruction without sanitization.
 **Gap 5: Kill-Switch (Absent)**  
 No hard limit outside the model; no deterministic spend-ceiling mechanism.
 
-## Gap Analysis: Manager's 10 Governance Questions
+## Gap Analysis: Model-Governance Controls
 
 **Gap 1: Human Override & Manual Alternative (Absent)**  
 No human-in-the-loop for high-value payments; no fallback manual process.
@@ -2857,7 +2857,7 @@ What happens next:
 - The edit is not prevented. The ledger is tamper-evident, not tamper-proof, so the point is that the change becomes visible.
 - The break is treated as a finding, which is evidence. Nobody "repairs", back-fills, updates or deletes entries, because hiding the break would defeat the purpose.
 - Because the ledger records actor type and actor, we can still see who did what and who authorised it.
-- The post-mortem rebuilds its timeline from this ledger, not from memory. That supports EY's "traceability" and the audit-trail reconstruction item on the launch checklist, and the record is retained for 180 days to meet CERT-In's 2022 Directions.
+- The post-mortem rebuilds its timeline from this ledger, not from memory. That supports EY's "traceability" and audit-trail reconstruction, and the record is retained for 180 days to meet CERT-In's 2022 Directions.
 ````
 
 </details>
