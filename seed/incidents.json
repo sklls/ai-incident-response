@@ -1,0 +1,14 @@
+[
+  { "id":"INC-023","title":"SupportBot exposes another customer's data","scenario":"privacy",
+    "affected_system":"SupportBot","phase":"triage","severity":"S1","owner":"IR-Commander",
+    "opened_at":"2026-10-07T14:02:00Z","scope":"unknown (1 vs many)","root_cause":null,
+    "obligations":[] },
+  { "id":"INC-024","title":"Hiring tool rejects one group more","scenario":"fairness",
+    "affected_system":"ScreenerAI","phase":"triage","severity":"S2","owner":"IR-Commander",
+    "opened_at":"2026-10-07T14:04:00Z","scope":"all applicants in affected period","root_cause":null,
+    "obligations":[] },
+  { "id":"INC-025","title":"Finance agent overpays","scenario":"autonomy",
+    "affected_system":"PayAgent","phase":"triage","severity":"S1","owner":"IR-Commander",
+    "opened_at":"2026-10-07T14:06:00Z","scope":"several payments beyond limit","root_cause":null,
+    "obligations":[] }
+]
