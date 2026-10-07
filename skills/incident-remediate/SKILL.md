@@ -7,21 +7,40 @@ description: Use when the root cause of an AI incident is known and you need to 
 Fix the cause, not the symptom; gate the change; prove it held before service returns.
 
 ## The knowledge
-Remediation is where an incident either ends or recurs, and the deciding factor is *where the fix lives*. The deepest lesson from agentic failures is that a control stated only in a prompt is advice, not a limit — the next cleverly worded input talks the model past it. A real fix is **deterministic and outside the model**: a spend cap enforced in code that refuses the transaction regardless of what the model decided. This is the spine of **EY's six guardrails** — least-privilege and time-bound identity, allowlisted actions, vaulted secrets, sandboxed and staged environments, behavioural monitoring, and human escalation — and of **OpenAI's six-layer defense stack** (safety training, monitors/filters, user confirmations, watch mode, network limits, disabled memory). The guardrails are layered on purpose: defence-in-depth means no single control is the only thing standing between a mistake and real-world harm.
+Remediation is where an incident either ends or recurs, and the deciding factor is *where the fix lives*. The deepest lesson from agentic failures: a control stated **only in a prompt** is advice — the next cleverly worded input talks the model past it. A real fix is **deterministic and outside the model**, in code that refuses the action regardless of what the model decided. Defence-in-depth means layering controls so no single one is the only thing between a mistake and real harm.
 
-The second half of remediation is **validation**, which is non-negotiable because a plausible fix that doesn't actually work is worse than none — it restores false confidence. Validation is specific to the failure: for a fairness fix you re-run the disparate-impact assessment and require it to clear both the four-fifths and significance tests; for an agent fix you confirm the hard limit blocks the exact action that caused the incident; for a privacy fix you confirm cross-session isolation. Durable remediation also installs **post-launch monitoring** — drift detectors with retraining triggers (IBM) — so the fix is watched, not assumed, which is what ISO 42001's corrective-and-preventive requirement and EU AI Act post-market monitoring both demand.
+**The control set — EY's six guardrails:**
+| # | Guardrail | Example fix |
+|---|---|---|
+| 1 | Identity & access — least privilege, time-bound | scope the agent's credentials; expire them |
+| 2 | Action boundaries — allowlists | only pre-approved payees/actions |
+| 3 | Secrets — vaulted, rotated | remove hardcoded keys |
+| 4 | Environments — sandboxed, staged | test the fix in sandbox before prod |
+| 5 | Monitoring — behavioural, anomaly | alert on limit-override attempts |
+| 6 | Human escalation — thresholds, kill-switch | approval above a spend threshold |
+
+**OpenAI's six-layer defense** adds: safety training · monitors/filters · user confirmations · watch mode · network limits · disabled memory ("100% confirmation before completing financial transactions").
+
+**The second half is validation**, which is non-negotiable because a plausible fix that doesn't work is worse than none — it restores false confidence. Validation is failure-specific:
+| Failure | Validation |
+|---|---|
+| Agent overstep | the deterministic limit refuses the exact offending action |
+| Fairness | `disparateImpactAssessment` returns `clear:true` (four-fifths + significance) |
+| Privacy | cross-session isolation confirmed; cache purged |
+
+Durable remediation also installs **post-launch monitoring** — drift detectors with retraining triggers (IBM) — so the fix is watched, not assumed, which is what **ISO 42001 A.10** (corrective + preventive) and **EU AI Act Art. 72** (post-market monitoring) both require.
 
 ### Sources
-EY Agentic AI Governance (guardrails 1–5); OpenAI System Card §3 (six-layer defense); IBM model-performance (drift detectors, retrain triggers); ISO/IEC 42001 A.10 (corrective + preventive); EU AI Act Art. 72 (post-market monitoring). Control catalog: `references/control-catalog.md`.
+EY Agentic AI Governance (guardrails 1–5); OpenAI System Card §3 (six-layer defense); IBM model-performance (drift detectors, retrain triggers); ISO/IEC 42001 A.10; EU AI Act Art. 72.
 
 ## Reads
 `root_cause` from the `incidents` record; `approvals`.
 
 ## Procedure
-1. Propose a fix that addresses the cause (not the symptom), preferring a deterministic control outside the model.
+1. Propose a fix that addresses the cause, preferring a deterministic control outside the model.
 2. Open `approval-gate` (**GATE**).
 3. On approval, deploy the fix.
-4. **Validate**: re-run the failure-specific check (re-compute the gap / confirm the limit blocks / confirm isolation).
+4. **Validate**: re-run the failure-specific check (table above).
 5. Install monitoring; restore service only if validation passes; advance the phase.
 
 ## The test
@@ -41,6 +60,3 @@ the fix is deployed, the failure-specific validation passes, monitoring is in pl
 
 ## Connect
 Called by `incident-commander` after investigation. Uses `approval-gate`; for fairness, re-runs `lib/fairness.mjs`; hands monitoring controls to `incident-postmortem`; logs via `audit-ledger`.
-
-## Resources
-`references/control-catalog.md` — EY 6 guardrails and OpenAI's 6-layer defense, with the deterministic-control-outside-the-model pattern.

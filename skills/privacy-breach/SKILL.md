@@ -7,12 +7,29 @@ description: Use when an AI system exposes personal or confidential data — a c
 Scope first — whose data, how far — because scope drives both severity and the legal clocks. Contain by shutting down; every minute is more exposure.
 
 ## The knowledge
-A privacy breach is defined by **exposure**, and the first and hardest question is its extent: one person or many, and what kind of data. The DPDP Act defines a personal-data breach as any unauthorised or accidental compromise of the confidentiality, integrity, or availability of personal data, and that scope determines everything downstream. AI systems fail in specific, recognisable ways. **Cross-session / cross-tenant bleed** is the classic: a response cache or retrieval index keyed without a tenant or session identifier serves one user's data to another — the fix is a scoping key, the evidence is in the cache configuration and the retrieval logs. **Memorisation and inference** (NIST AI 600-1 "data privacy") is subtler: a model regurgitates training data verbatim, or an attacker infers membership. On the application surface this maps to **OWASP LLM02, sensitive-information disclosure**. The containment shape is **shutdown or safe-mode**, not a careful fix, because unlike a bias problem the harm compounds every minute the system stays live.
+A privacy breach is defined by **exposure**, and the first and hardest question is its extent: one person or many, and what kind of data. The DPDP Act defines a personal-data breach as any unauthorised or accidental compromise of the confidentiality, integrity, or availability of personal data. Scope is both technical and legal — the DPDP report must state the **approximate number of Data Principals affected**, so counting is a compliance step. Grade it: how many (one / some / many / all / **unknown** → worst case) and how sensitive (none / low / PII / sensitive PII / financial).
 
-The legal engine is **India-first and clock-driven**. Reporting duties stack: **CERT-In** requires reporting the cyber incident within **6 hours**; the **DPDP Act 2023** requires an initial intimation to the Data Protection Board without delay and a **detailed report within 72 hours**, plus notice to every affected Data Principal without delay; **IT Act §43A** and the SPDI Rules impose reasonable-security obligations whose breach carries civil liability. **NITI's purpose-limitation** principle and the **Puttaswamy** privacy right frame the harm as a rights violation, not merely a security lapse. Scoping accurately matters legally too: the DPDP report must state the approximate number of Data Principals affected.
+**Common AI leak vectors (what to look for):**
+| Vector | Mechanism | Evidence | Fix |
+|---|---|---|---|
+| Cross-session / cross-tenant bleed | cache or retrieval keyed without a tenant/session id | cache config, retrieval logs | scoped key + purge cache |
+| Training-data memorisation | model regurgitates memorised records | prompts eliciting verbatim data | dedup / DP training, output filter |
+| Membership inference | attacker infers who was in training | repeated probing | DP, query limits |
+| Over-broad retrieval | RAG returns another user's docs | retrieval index scope | per-user access filter |
+
+These map to **OWASP LLM02** (sensitive-information disclosure) and **NIST AI 600-1 "data privacy"** (memorisation, inference). The containment shape is **shutdown or safe-mode**, not a careful fix, because unlike a bias problem the harm compounds every minute the system stays live.
+
+**India legal duties (clock-driven):**
+| Instrument | Duty |
+|---|---|
+| CERT-In Directions 2022 (IT Act §70B) | report the cyber incident within **6 hours** |
+| DPDP Act 2023 | initial intimation (without delay) + **72h** detailed report to the Board; notify each affected Data Principal |
+| IT Act §43A + SPDI Rules | reasonable security; civil liability for negligence with sensitive personal data |
+| NITI RAI | purpose-limitation — use data only for its original purpose |
+| Puttaswamy (2017) | privacy is a fundamental right → a breach is a rights harm |
 
 ### Sources
-DPDP Act 2023 + DPDP Rules 2025 (breach definition, 72-hour report, Data Principal notice); CERT-In Directions 2022 (6-hour report); IT Act §43A / SPDI Rules; NIST AI 600-1 "data privacy"; OWASP LLM02; NITI purpose-limitation; Puttaswamy (2017). Detail: `references/privacy-regime.md`.
+DPDP Act 2023 + Rules 2025; CERT-In Directions 2022; IT Act §43A / SPDI Rules; NIST AI 600-1 "data privacy"; OWASP LLM02; NITI purpose-limitation; Puttaswamy (2017).
 
 ## Reads
 retrieval / cache logs; the system's data-handling config; session-correlation metrics; the report.
@@ -22,7 +39,7 @@ retrieval / cache logs; the system's data-handling config; session-correlation m
 2. Recommend **shutdown / safe-mode** to `incident-contain`.
 3. For investigation, check cache/tenant scoping and memorisation; count affected sessions/users.
 4. Raise the obligations (CERT-In 6h, DPDP 72h, §43A) with deadlines via `regulatory-map`.
-5. Preventive control: a tenant-isolation test in CI + a cross-session leak canary.
+5. Preventive control: a tenant-isolation test in CI + a cross-session leak canary + a retention SOP.
 
 ## The test
 Scope classification (one|some|many|all|unknown) feeds `severity-matrix`; unknown is scored as the worst case.
@@ -41,6 +58,3 @@ the scope and data categories are established, containment is a shutdown, and th
 
 ## Connect
 Consulted by `incident-triage`, `-contain`, `-investigate`, `-communicate`, and `regulatory-map` whenever the scenario is `privacy`.
-
-## Resources
-`references/privacy-regime.md` — DPDP breach rules & contents, CERT-In timing, §43A/SPDI, and the common AI leak vectors.
